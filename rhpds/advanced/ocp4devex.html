@@ -439,7 +439,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span id="author" class="author">Jaroslaw Stakun</span><br>
 <span id="email" class="email"><a href="mailto:jarek@redhat.com">jarek@redhat.com</a></span><br>
 <span id="revnumber">version 1.0.0,</span>
-<span id="revdate">April 06, 2020</span>
+<span id="revdate">April 21, 2020</span>
 <br><span id="revremark">Draft</span>
 </div>
 <div id="toc" class="toc2">
@@ -480,7 +480,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#introduction-2">Introduction</a></li>
 <li><a href="#check-the-project-is-ready-to-use">Check the project is ready to use</a></li>
 <li><a href="#camel-k-and-the-operator-lifecycle-manager">Camel K and the Operator Lifecycle Manager</a></li>
-<li><a href="#deploy-a-camel-k-interation">Deploy a Camel K Interation</a></li>
+<li><a href="#deploy-a-camel-k-integration">Deploy a Camel K Integration</a></li>
 <li><a href="#deploy-camel-k-in-developer-mode">Deploy Camel K in Developer mode</a></li>
 </ul>
 </li>
@@ -511,11 +511,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#creating-the-pre-requisites-for-the-chapter">Creating the pre-requisites for the chapter</a></li>
 <li><a href="#create-knative-messaging-channel">Create Knative Messaging Channel</a></li>
 <li><a href="#deploy-the-integrations">Deploy the Integrations</a></li>
+<li><a href="#edit-the-integration-to-use-a-counter-and-cache">Edit the Integration to use a Counter and Cache</a></li>
 <li><a href="#knative-in-action">Knative in action</a></li>
+<li><a href="#replace-knative-in-memory-messaging-with-amq-streams-kafka">Replace Knative in memory messaging with AMQ Streams (Kafka)</a>
+<ul class="sectlevel3">
+<li><a href="#install-a-kafka-broker-using-amq-streams">Install a Kafka Broker using AMQ Streams</a></li>
+<li><a href="#install-knative-kafka-eventing">Install Knative Kafka Eventing</a></li>
+<li><a href="#run-the-examples">Run the examples</a></li>
+<li><a href="#accessing-the-kafa-topics-directly">Accessing the Kafa Topics directly</a></li>
 </ul>
 </li>
-<li><a href="#camel-k-and-openshift-serverless-serving">Camel K and Openshift Serverless Serving</a>
-<ul class="sectlevel2">
 <li><a href="#introduction-5">Introduction</a></li>
 <li><a href="#check-the-project-is-ready-to-use-3">Check the project is ready to use</a></li>
 <li><a href="#openshift-serverless-and-the-operator-lifecycle-manager-2">Openshift Serverless and the Operator Lifecycle Manager</a></li>
@@ -612,10 +617,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><a href="https://www.openshift.com/products/container-platform">https://www.openshift.com/products/container-platform</a></p>
 </li>
 <li>
-<p><a href="https://bit.ly/2xXaBGv" class="bare">https://bit.ly/2xXaBGv</a> (the Web Console URL for the Workshop)</p>
+<p><a href="https://bit.ly/2VH1jXw" class="bare">https://bit.ly/2VH1jXw</a> (the Web Console URL for the Workshop)</p>
 </li>
 <li>
-<p><a href="https://api.cluster-cee-d54f.cee-d54f.example.opentlc.com:6443" class="bare">https://api.cluster-cee-d54f.cee-d54f.example.opentlc.com:6443</a> (The Web Terminal URL for the workshop)</p>
+<p><a href="https://api.cluster-cee-3fb4.cee-3fb4.example.opentlc.com:6443" class="bare">https://api.cluster-cee-3fb4.cee-3fb4.example.opentlc.com:6443</a> (The Web Terminal URL for the workshop)</p>
 </li>
 </ul>
 </div>
@@ -657,7 +662,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><strong>The workshop was designed and tested on the Chrome browser and it is advised to avoid issues that this browser be used whenever possible</strong></p>
 </div>
 <div class="paragraph">
-<p>Open the browser and navigate to the console url <a href="https://bit.ly/2xXaBGv" class="bare">https://bit.ly/2xXaBGv</a></p>
+<p>Open the browser and navigate to the console url <a href="https://bit.ly/2VH1jXw" class="bare">https://bit.ly/2VH1jXw</a></p>
 </div>
 <div class="paragraph">
 <p>Logon using the user provided by the course administrator (userx where x is a unique number for your session)</p>
@@ -1216,7 +1221,7 @@ ls</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="deploy-a-camel-k-interation"><a class="anchor" href="#deploy-a-camel-k-interation"></a>Deploy a Camel K Interation</h3>
+<h3 id="deploy-a-camel-k-integration"><a class="anchor" href="#deploy-a-camel-k-integration"></a>Deploy a Camel K Integration</h3>
 <div class="paragraph">
 <p>Firstly, let’s start by deploying a simple integration, type</p>
 </div>
@@ -2089,7 +2094,13 @@ tekton-task-cache-pvc   Bound         pvc-1d894a93-2646-11ea-9f45-0a9970779e5c  
 <p>At the time of writing, Serving is in technology preview, and Eventing is in Developer Preview</p>
 </div>
 <div class="paragraph">
-<p>"Serving" enables request/response workloads, and Eventing enables asynchronous event based workloads using cloudevents. In this lab, we are going to look at eventing, and how easy it is to integration with Camel K.</p>
+<p>"Serving" enables request/response workloads, and Eventing enables asynchronous event based workloads using cloudevents.</p>
+</div>
+<div class="paragraph">
+<p>Eventing has become an important part of a Microservice architecture. It enables services to notify other services of change (typically, change in state) in a loosely coupled manner. To enable this, Knative Eventing uses a publish and subscribe architecture. This enables the source service to publish events without having the knowledge of who maybe wanting to consume the events. It allows any number of sink services to subscribe to the event and act upon it.</p>
+</div>
+<div class="paragraph">
+<p>In this lab, we are going to look at eventing, and how easy it is to integration with Camel K.</p>
 </div>
 </div>
 </div>
@@ -2118,7 +2129,7 @@ If the response from the commands indicates that you are not userX (where X is y
 </table>
 </div>
 <div class="paragraph">
-<p>Whilst Openshift Serverless has it&#8217;s own cli (kn), the purpose of this lab is to show the integration of Camel K into Openshift Serverless.</p>
+<p>Whilst Openshift Serverless has it&#8217;s own cli (kn), the purpose of this lab is to show the integration of Camel K into Openshift Serverless and how easy this is to use.</p>
 </div>
 </div>
 <div class="sect2">
@@ -2326,7 +2337,130 @@ The Knative service is represented by the square box. You should see 2 of these 
 </div>
 </div>
 <div class="paragraph">
-<p>Repeat the steps above for the other 2 Integrations if you like.</p>
+<p>Repeat the steps above for the other Integrations if you like.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="edit-the-integration-to-use-a-counter-and-cache"><a class="anchor" href="#edit-the-integration-to-use-a-counter-and-cache"></a>Edit the Integration to use a Counter and Cache</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">NOTE</dt>
+<dd>
+<p>Because the output from the Feed Integation doesn&#8217;t change, it&#8217;s hard to see if all the messages are being processed, or indeed if some are being dropped. Lets make a small change to the Integration. The change will add a cache, and a counter to ensure that each message has a counter in it.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>In the terminal window edit the Integration called feed.groovy</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>cd /workspace/examples/knative
+vi feed.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Between the line starting with <strong>from</strong> and the line starting with <strong>.setBody</strong> insert the follow code (copy the code by higlightling it and copying it)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>        .setHeader("CamelCaffeineAction", constant("GET"))
+        .setHeader("CamelCaffeineKey", constant("count"))
+        .toF("caffeine-cache://%s", "messagecount")
+        .choice()
+                .when().simple('${body} == null') // When no counter stored, default to zero
+                        .setHeader('counter').constant(0)
+                .otherwise() // retrieve the counter
+                        .setHeader('counter').simple('${body}')
+        .end()
+        .setHeader('counter').ognl('request.headers.counter + 1')
+        .setBody().simple('${header.counter}')
+        .setHeader("CamelCaffeineAction", constant("PUT"))
+        .setHeader("CamelCaffeineKey", constant("count"))
+        .toF("caffeine-cache://%s", "messagecount")
+        .setBody().simple('Hello${header.counter} World${header.counter} from${header.counter} Camel${header.counter} K${header.counter}')</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">TIP</dt>
+<dd>
+<p>I&#8217;m no vi expert, but if you don&#8217;t know vi, use the keyboard arrow keys to move to the line beginning with <strong>from</strong>, then to go to the end of the line press <strong>$</strong>, press <strong>i</strong>, press the <strong>right arrow</strong> once to move the cursor to the end of the line and press <strong>enter</strong> ( this shoud insert a blank line and move the cursor to the beginning of that line. Paste in the code by pressing <strong>ctrl v</strong>. Don&#8217;t worry about the indentation too much. Once pasted in press <strong>esc</strong>.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The final line pasted in is <strong>.setBody</strong>. There is an existing <strong>.setBody</strong> line that we need to delete, the line looks like :-</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>.setBody().constant("Hello World from Camel K")</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">TIP</dt>
+<dd>
+<p>To delete, move the cursor to the line and press <strong>dd</strong> Finally save your work by typing <strong>:wq</strong> and press <strong>enter</strong></p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Once complete, the integration should look like :-</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>// camel-k: language=groovy
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+from('timer:clock?period=3s')
+        .setHeader("CamelCaffeineAction", constant("GET"))
+        .setHeader("CamelCaffeineKey", constant("count"))
+        .toF("caffeine-cache://%s", "messagecount")
+        .choice()
+                .when().simple('${body} == null') // When no counter stored, default to zero
+                        .setHeader('counter').constant(0)
+                .otherwise() // retrieve the counter
+                        .setHeader('counter').simple('${body}')
+        .end()
+        .setHeader('counter').ognl('request.headers.counter + 1')
+        .setBody().simple('${header.counter}')
+        .setHeader("CamelCaffeineAction", constant("PUT"))
+        .setHeader("CamelCaffeineKey", constant("count"))
+        .toF("caffeine-cache://%s", "messagecount")
+        .setBody().simple('Hello${header.counter} World${header.counter} from${header.counter} Camel${header.counter} K${header.counter}')
+        .to('knative:channel/messages')
+        .log('sent message to messages channel')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each word should now have the counter appended to it</p>
+</div>
+<div class="paragraph">
+<p>Test your work by typing :-</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kamel run feed.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use the skills you&#8217;ve learned to view the output of the container logs to check that the messages now contain a counter.</p>
 </div>
 </div>
 <div class="sect2">
@@ -2395,13 +2529,653 @@ kamel delete printer</code></pre>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="replace-knative-in-memory-messaging-with-amq-streams-kafka"><a class="anchor" href="#replace-knative-in-memory-messaging-with-amq-streams-kafka"></a>Replace Knative in memory messaging with AMQ Streams (Kafka)</h3>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Introduction</div>
+<div class="paragraph">
+<p>You may have noticed that the default Knative event channel is in memory. This means that there is the potential for message loss in the solution, and also the potential for some subcribers to miss messages.</p>
+</div>
+<div class="paragraph">
+<p>Most applications need some form of persistent messaging, avoiding message loss in the event of something going wrong. A popular choice in the microservice world for publish and subsribe eventing is Apache Kafka. In addition to the InMemoryChannel used in the first part of this lab, Knative also has a channel type called KafkaChannel. As the name suggests, this allows Knative Eventing to use a Kafka Topic as the persistent store for the messages ensuring the reliable delivery to all subscribers.</p>
+</div>
+<div class="paragraph">
+<p>So, we can use Kafka as a persistent store, but how do we get a Kafka Cluster installed on Openshift?</p>
+</div>
+<div class="paragraph">
+<p>Red Hat has an operator based Enterprise Kafka distribution called AMQ Streams. AMQ Streams is based on the opensource project Strimzi (<a href="https://strimzi.io" class="bare">https://strimzi.io</a>). At the time of writing, Strimzi is a sandbox project within CNCF.</p>
+</div>
+<div class="paragraph">
+<p>Using Kafka behind Knative eventing means that developers also get access to the full Kafka eco-system. Change Data capture could be used to publish messages that are consumed by Knative eventing clients. Kafka clients such as the streaming api could be used to read messages published by Knative based services. All Kafka API&#8217;s and services could be used as part of the solution.</p>
 </div>
 </div>
-<div class="sect1">
-<h2 id="camel-k-and-openshift-serverless-serving"><a class="anchor" href="#camel-k-and-openshift-serverless-serving"></a>Camel K and Openshift Serverless Serving</h2>
-<div class="sectionbody">
+</div>
+<div class="paragraph">
+<p>Before you can continue, you need to delete the in memory channels created earlier in the lab.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc delete inmemorychannel messages
+oc delete inmemorychannel words</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Double check that the inmemorychannels have been successfully deleted</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc get inmemorychannels</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output should look like :-</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>No resources found in sandboxX namespace.</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="install-a-kafka-broker-using-amq-streams"><a class="anchor" href="#install-a-kafka-broker-using-amq-streams"></a>Install a Kafka Broker using AMQ Streams</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+AMQ Streams using an Operator to perform all of the administration tasks on Openshift. The operator is already installed for you and makes available a number of new Custom Resource Definitions (CRD). These are Kafka, KafkaBridge, KafkaConnect, KafkaConnectS2I, KafkaConnector, KafkaMirrorMaker, KafkaMirrorMaker2, KafkaTopic, and KafkaUser. As you an see, the AMQ Streams operater has a rich set of functionality. All of the configuration work can be performed throught the operator without detailed know of Kafka Installations. You will see in the next step how easy it is to create an Kafka cluster including the Kafka Brokers, and Zookeeper clusters with one simple YAML file.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once the operators are installed, the CRD&#8217;s become available for you to use through the developer view in the Openshift console.</p>
+</div>
+<div class="paragraph">
+<p>In the Openshift console, make sure you in developer view looking at your sandboxxX project.</p>
+</div>
+<div class="paragraph">
+<p>This should look similar to the screenshot below</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/camekknative-14.png" alt="Developer Console">
+</div>
+</div>
+<div class="paragraph">
+<p>Click on "+Add"</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/camekknative-15.png" alt="Add">
+</div>
+</div>
+<div class="paragraph">
+<p>You will see "From Catalog" on the screenshot above, 'click' on it</p>
+</div>
+<div class="paragraph">
+<p>This will present you with the developer catalog.</p>
+</div>
+<div class="paragraph">
+<p>Underneath the words "All Items" you will see a text box that says "Filter by keyword"</p>
+</div>
+<div class="paragraph">
+<p>In that text box, type "kafka"</p>
+</div>
+<div class="paragraph">
+<p>You should see a screenshot similar to the one below</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/camekknative-16.png" alt="Kafka in Catalog">
+</div>
+</div>
+<div class="paragraph">
+<p>'Click' on Kafka</p>
+</div>
+<div class="paragraph">
+<p>'Press' the Create button</p>
+</div>
+<div class="paragraph">
+<p>You will now be presented with a sample Kafka yaml file that looks similar to the screenshot below</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/camekknative-17.png" alt="Sample Kafka yaml">
+</div>
+</div>
+<div class="paragraph">
+<p>Due to the number of workshop attendees and the size of the Openshift cluster we need to make the Kafka deployment smaller by reducing the number of Kafka Brokers in the cluster to 1, and the number of zookeeper instances to 1.</p>
+</div>
+<div class="paragraph">
+<p>To do this, change</p>
+</div>
+<div class="paragraph">
+<p>spec.kafka.replicas = 1</p>
+</div>
+<div class="paragraph">
+<p>and</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>spec.zookeeper.replicas = 1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Because the kafka brokers are now set to one replica, you have to modify the configuration elements below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>offset.topic.replication.factor: 1
+
+transaction.state.log.replication.factor: 1
+
+transaction.state.log.min.isr: 1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Your final Kafka yaml file should look like :-</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: my-cluster
+  namespace: sandbox30
+spec:
+  kafka:
+    version: 2.4.0
+    replicas: 1
+    listeners:
+      plain: {}
+      tls: {}
+    config:
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      log.message.format.version: '2.4'
+    storage:
+      type: ephemeral
+  zookeeper:
+    replicas: 1
+    storage:
+      type: ephemeral
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>'Press' create.</p>
+</div>
+<div class="paragraph">
+<p>You will be presented with a screen that looks similar to the screenshot below. (This is looking at the AMQ Streams operator)</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/camekknative-18.png" alt="AMQ Streams Operator">
+</div>
+</div>
+<div class="paragraph">
+<p>If you click on "my-cluster", you can see the current state of the Kafka deployment by scrolling to the bottom of the screen</p>
+</div>
+<div class="paragraph">
+<p>Underneath Conditions, you are looking for</p>
+</div>
+<div class="paragraph">
+<p>Type       Status
+Ready      True</p>
+</div>
+<div class="paragraph">
+<p>It should like the screenshot below</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/camekknative-19.png" alt="AMQ Streams Status">
+</div>
+</div>
+<div class="paragraph">
+<p>You can also go back to the Developer view in the console. You will see the Zookeeper and Kafka Brokers starting up. Once everything is started it should look similar to the screenshot below.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/camekknative-20.png" alt="AMQ Streams Topology View">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="install-knative-kafka-eventing"><a class="anchor" href="#install-knative-kafka-eventing"></a>Install Knative Kafka Eventing</h4>
+<div class="paragraph">
+<p>Note:  Knative Kafka is operator based, the operator has been install previously for you so the installation should be straight forward</p>
+</div>
+<div class="paragraph">
+<p>The CRD for Knative Kafka is called "KnativeEventingKafka", you need to add a CRD to your namespace to integrate Knative eventing with Kafka.</p>
+</div>
+<div class="paragraph">
+<p>Fistly,</p>
+</div>
+<div class="paragraph">
+<p>You need to find the bootstrap server of your Kafka Cluster.</p>
+</div>
+<div class="paragraph">
+<p>To do this, go to the terminal window and type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc get services</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will see a list of services similat to the list below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+devex4                        ClusterIP   172.30.227.91    &lt;none&gt;        8080/TCP                     3h55m
+my-cluster-kafka-bootstrap    ClusterIP   172.30.67.254    &lt;none&gt;        9091/TCP,9092/TCP,9093/TCP   65m
+my-cluster-kafka-brokers      ClusterIP   None             &lt;none&gt;        9091/TCP,9092/TCP,9093/TCP   65m
+my-cluster-zookeeper-client   ClusterIP   172.30.178.174   &lt;none&gt;        2181/TCP                     66m
+my-cluster-zookeeper-nodes    ClusterIP   None             &lt;none&gt;        2181/TCP,2888/TCP,3888/TCP   66m</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You are after the service name ending in "bootstrap" - make a note of it as you will need it in the next step</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>cd /workspace/workshop4/camelfiles/streams</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a KnativeEventing Kafka CRD</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>vi mykafkaknative.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Paste the following into the file, ensuring you replace the bootstrapServer with the one you noted above. Please make sure you keep the single quotes in the file.</p>
+</div>
+<div class="paragraph">
+<p>Replace the 'X' o 'sandbox' with your allocated number</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>apiVersion: eventing.knative.dev/v1alpha1
+kind: KnativeEventingKafka
+metadata:
+  name: knative-eventing-kafka
+  namespace: sandboxX
+spec:
+  bootstrapServers: 'replacewithyourbootstrapserver:9092'
+  setAsDefaultChannelProvisioner: true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once you have changed the bootstrapserver, save the file</p>
+</div>
+<div class="paragraph">
+<p>You can now store the CRD into Openshift by typing the following :-</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc apply -f mykafkaknative.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will now perform perform the Integration between Knative Eventing and Kafka</p>
+</div>
+<div class="paragraph">
+<p>To check the status of the Integration, type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc describe KnativeEventingKafka knative-eventing-kafka</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output will look similar to below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>Name:         knative-eventing-kafka
+Namespace:    sandbox30
+Labels:       &lt;none&gt;
+Annotations:  kubectl.kubernetes.io/last-applied-configuration:
+                {"apiVersion":"eventing.knative.dev/v1alpha1","kind":"KnativeEventingKafka","metadata":{"annotations":{},"name":"knative-eventing-kafka","...
+API Version:  eventing.knative.dev/v1alpha1
+Kind:         KnativeEventingKafka
+Metadata:
+  Creation Timestamp:  2020-04-02T15:18:07Z
+  Generation:          1
+  Resource Version:    196044
+  Self Link:           /apis/eventing.knative.dev/v1alpha1/namespaces/sandbox30/knativeeventingkafkas/knative-eventing-kafka
+  UID:                 f8278481-3991-4d8d-a145-4d11ddfa56fb
+Spec:
+  Bootstrap Servers:                   my-cluster-kafka-bootstrap:9092
+  Set As Default Channel Provisioner:  true
+Status:
+  Conditions:
+    Last Transition Time:  2020-04-02T15:18:28Z
+    Status:                True
+    Type:                  DeploymentsAvailable
+    Last Transition Time:  2020-04-02T15:18:19Z
+    Status:                True
+    Type:                  InstallSucceeded
+    Last Transition Time:  2020-04-02T15:18:28Z
+    Status:                True
+    Type:                  Ready
+  Version:                 0.13.2
+Events:                    &lt;none&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Very near the bottom of the output, it should say Type = Ready. This means that you are good to go.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="run-the-examples"><a class="anchor" href="#run-the-examples"></a>Run the examples</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>cd /workspace/workshop4/camelfiles/streams</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create the Knative Eventing channel backed by Kafka as a persistent store</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc apply -f messages.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Lets make sure that everything appears to be wired up.</p>
+</div>
+<div class="paragraph">
+<p>Check to make sure that the Kafka channel is deployed and ready</p>
+</div>
+<div class="paragraph">
+<p>Type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc get kafkachannel</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If everything worked as expected, you should see the output similar to below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>NAME                                         PARTITIONS   REPLICATION FACTOR
+knative-messaging-kafka.sandbox30.messages   1            1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>OK, so the above output suggests that the channel is ready and working.</p>
+</div>
+<div class="paragraph">
+<p>Lets make sure that a topic has been created in Kafka for us.</p>
+</div>
+<div class="paragraph">
+<p>If you recall, the AMQ streams operator has a number of different CRD&#8217;s, therefore the creeation of the Knative Channel, should have created a KafkaTopic CRD. Lets check to make sure that&#8217;s the case.</p>
+</div>
+<div class="paragraph">
+<p>Type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc get kafkatopics</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output should look similar to below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>NAME                                         PARTITIONS   REPLICATION FACTOR
+knative-messaging-kafka.sandbox30.messages   1            1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This goes to show that the Kafka Topic has succesfully been create with the number of partitions and replication factor that was asked for when creating the channel.</p>
+</div>
+<div class="paragraph">
+<p>and finally, if you are more comfortable using the Kafka CLI, then you still have access to this within the Kafka statefulset.</p>
+</div>
+<div class="paragraph">
+<p>Assuming you did not change the name of your Kafka Cluster then the stateful set should be called "my-cluster-kafka-0"</p>
+</div>
+<div class="paragraph">
+<p>If you did change the name of the cluster, then please change the name of the statefulset accordingly.</p>
+</div>
+<div class="paragraph">
+<p>Type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc exec -it my-cluster-kafka-0 -- bin/kafka-topics.sh --zookeeper localhost:2181 --list</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output should look like the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>OpenJDK 64-Bit Server VM warning: If the number of processors is expected to increase from one, then you should configure the number of parallel GC threads appropriately using -XX:ParallelGCThreads=N
+knative-messaging-kafka.sandbox30.messages</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It confirms that there is a topic called knative-messaging-kafka.sandbox30.messages defined to the cluster.</p>
+</div>
+<div class="paragraph">
+<p>and finally, you can check how the topic is laid out in the cluster  (Not so exciting as there is only one broker)</p>
+</div>
+<div class="paragraph">
+<p>Type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc exec -it my-cluster-kafka-0 -- bin/kafka-topics.sh --describe --zookeeper localhost:2181  --topic knative-messaging-kafka.sandboxX.messages</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output should look like the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>----OpenJDK 64-Bit Server VM warning: If the number of processors is expected to increase from one, then you should configure the number of parallel GC threads appropriately using -XX:ParallelGCThreads=N
+Topic: knative-messaging-kafka.sandbox30.messages       PartitionCount: 1       ReplicationFactor: 1    Configs:
+        Topic: knative-messaging-kafka.sandbox30.messages       Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+----</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This shows that 1 partition has been created. ISR is zero because the replication factor is 1. The partition is not being replicated. This is not recommended for production. This is purely to limit the resources on our Openshift Cluser.</p>
+</div>
+<div class="paragraph">
+<p>Lets deploy the second channel called 'words' again, this time based on a Kafka Channel</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>cd /workspace/workshop4/camelfiles/streams</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create the Knative Eventing channel backed by Kafka as a persistent store</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc apply -f words.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We wont go through all the checking we did above, lets just type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc get kafkachannels</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output should look similar to that below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>NAME       READY   REASON   URL                                                      AGE
+messages   True             http://messages-kn-channel.sandbox30.svc.cluster.local   25m
+words      True             http://words-kn-channel.sandbox30.svc.cluster.local      8s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We are now going to re-run exactly the same integrations that we used earlier in the lab, as a reminder, this is what the flow looks like</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="images/knative-eventing.png" alt="knative eventing">
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure you are in the "Topology view" within the Openshift console so you can see things deploy and run.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>cd /workspace/examples/knative</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Run the Integration that starts everything off</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kamel run feed.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you look at the log in the running pod for the feed applicaion you should see that messages it&#8217;s creating (If you cannot remember how to do this, review the instructions for the first part of this lab)</p>
+</div>
+<div class="paragraph">
+<p>Return to the Topology view</p>
+</div>
+<div class="paragraph">
+<p>Now run the Splitter Integration</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kamel run splitter.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Take a look at the log file for the splitter Integration, you will notice something a bit weird</p>
+</div>
+<div class="paragraph">
+<p>The spitter is outputting the message like this :-</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>2020-04-02 16:11:07.990 [32mINFO [m [vert.x-eventloop-thread-0] route1 - sending "SGVsbG8gV29ybGQgZnJvbSBDYW1lbCBL" to words channel
+2020-04-02 16:11:10.814 [32mINFO [m [vert.x-eventloop-thread-0] route1 - sending "SGVsbG8gV29ybGQgZnJvbSBDYW1lbCBL" to words channel
+2020-04-02 16:11:13.840 [32mINFO [m [vert.x-eventloop-thread-0] route1 - sending "SGVsbG8gV29ybGQgZnJvbSBDYW1lbCBL" to words channel
+2020-04-02 16:11:16.611 [32mINFO [m [vert.x-eventloop-thread-0] route1 - sending "SGVsbG8gV29ybGQgZnJvbSBDYW1lbCBL" to words channel
+2020-04-02 16:11:19.636 [32mINFO [m [vert.x-eventloop-thread-0] route1 - sending "SGVsbG8gV29ybGQgZnJvbSBDYW1lbCBL" to words channel
+2020-04-02 16:11:22.657 [32mINFO [m [vert.x-eventloop-thread-0] route1 - sending "SGVsbG8gV29ybGQgZnJvbSBDYW1lbCBL" to words channel
+2020-04-02 16:11:25.676 [32mINFO [m [vert.x-eventloop-thread-0] route1 - sending "SGVsbG8gV29ybGQgZnJvbSBDYW1lbCBL" to words channel
+2020-04-02 16:11:28.697 [32mINFO [m [vert.x-eventloop-thread-0] route1 - sending "SGVsbG8gV29ybGQgZnJvbSBDYW1lbCBL" to words channel</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Kafka client used has serialized the messages into Base64&#8230;&#8203; not so helpful for this little example.</p>
+</div>
+<div class="paragraph">
+<p>We can fix this by making a small change to the 'spiltter.groovy' integration. This will allow the integration to transform the Base64 back to normal ascii text</p>
+</div>
+<div class="paragraph">
+<p>Type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>vi spiltter.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The integration will look like</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>from('knative:channel/messages')
+  .split().tokenize(" ")
+  .log('sending ${body} to words channel')
+  .to('knative:channel/words')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Before it does the ".split", add a new line and insert</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>/.unmarshal().base64()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The line above with transform from Base64 to a Java byte array.
+The integration should now look like</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>from('knative:channel/messages')
+  .unmarshal().base64()
+  .split().tokenize(" ")
+  .log('sending ${body} to words channel')
+  .to('knative:channel/words')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>redeploy the integration</p>
+</div>
+<div class="paragraph">
+<p>Type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kamel run --dependency=camel-base64 splitter.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will notice that the Camel Base64 dependency has been added, this enables Camel K to download the dependancy and package it into the run</p>
+</div>
+<div class="paragraph">
+<p>Check the pods log again, you should be able to read the text again</p>
+</div>
+<div class="paragraph">
+<p>If you look at the printer Integration log, you will notice that it has exactly the same problem.</p>
+</div>
+<div class="paragraph">
+<p>See if you can fix the problem for this integration by following the same steps above. The name of the file is printer.groovy</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="accessing-the-kafa-topics-directly"><a class="anchor" href="#accessing-the-kafa-topics-directly"></a>Accessing the Kafa Topics directly</h4>
+<div class="paragraph">
+<p>In the terminal window, type :-</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>oc exec -it my-cluster-kafka-0 -- bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic knative-messaging-kafka.sandboxX.messages --from-beginning</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There you go, all the messaging sent using Knative eventing channels available in a Kafka topic. This means that all the events flying around the event driven network can also be made available to many other tools supported by Kafka. This could be big data systems, AI systems, mirroring events to different Kafka Clusters and many more thinks. Of course, the biggest benefit is that the events are now persisted, partitioned for scale, and replicated using classic Kafka functionality.
+== Camel K and Openshift Serverless Serving</p>
+</div>
 <div class="paragraph">
 <p>Author: Phil Prosser (feedback to <a href="mailto:pprosser@redhat.com">pprosser@redhat.com</a>)</p>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="introduction-5"><a class="anchor" href="#introduction-5"></a>Introduction</h3>
@@ -2777,7 +3551,7 @@ oc expose service node-app-master --name="master-app-route"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p><em>where XX is you user number</em></p>
+<p><em>where XX is your user number</em></p>
 </div>
 <div class="paragraph">
 <p>The above commands will create image streams for the master and the slave which can be viewed using the command below.</p>
@@ -3341,7 +4115,7 @@ oc delete project master-slave-userXX-qa</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2020-04-03 09:53:04 +0200
+Last updated 2020-04-21 12:36:03 +0200
 </div>
 </div>
 </body>
